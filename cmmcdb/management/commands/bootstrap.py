@@ -74,7 +74,7 @@ class Command(BaseCommand):
 
     def populateAC(self):
         cap = Capability.objects.create(
-            index=1, name="Establish internal system access requirements", process=False
+            index=1, name="Establish internal system access requirements.", process=False
         )
 
         a = Activity.objects.create(
