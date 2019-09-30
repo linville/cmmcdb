@@ -13,7 +13,8 @@ import json
 
 
 class Command(BaseCommand):
-    help = "Tests"
+    help = """Basic bootstrapping code for high level data. Useful to make the
+    PDF import algorithms a little bit easier."""
 
     def handle(self, *args, **options):
         self.cis = Reference.objects.create(name="CIS")
@@ -69,49 +70,3 @@ class Command(BaseCommand):
         self.domainSA = Domain.objects.create(short="SA", name="Situational Awareness")
         self.domainSCP = Domain.objects.create(short="SCP", name="System and Communications Protection")
         self.domainSII = Domain.objects.create(short="SII", name="System and Information Integrity")
-
-        self.populateAC()
-
-    def populateAC(self):
-        cap = Capability.objects.create(
-            index=1, name="Establish internal system access requirements.", process=False
-        )
-
-        a = Activity.objects.create(
-            index=1,
-            name="System access is limited to authorized users, processes acting on behalf of authorized users, and devices, at least in an ad hoc manner.",
-            maturity_level=self.m1,
-            domain=self.domainAC,
-            capability=cap,
-        )
-        ActivityReference.objects.create(
-            activity=a,
-            reference=self.nist,
-            section="3.1.1"
-        )
-
-        a = Activity.objects.create(
-            index=1,
-            name="The organization has a process to limit system access to authorized users, processes acting on behalf of authorized users, and devices.",
-            maturity_level=self.m2,
-            domain=self.domainAC,
-            capability=cap,
-        )
-        ActivityReference.objects.create(
-            activity=a,
-            reference=self.nist,
-            section="3.1.1"
-        )
-        
-        a = Activity.objects.create(
-            index=2,
-            name="System logon screens display the appropriate system use notification messages.",
-            maturity_level=self.m2,
-            domain=self.domainAC,
-            capability=cap,
-        )
-        ActivityReference.objects.create(
-            activity=a,
-            reference=self.nist,
-            section="3.1.9"
-        )
