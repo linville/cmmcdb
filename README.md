@@ -1,7 +1,7 @@
 cmmcdb
 ======
 
-Django ActiveRecord structure to to store the Cybersecurity Model Maturity Certification model framework. Includes various Python utilities for converting the PDF distributed by
+Django ActiveRecord structure to to store the [Cybersecurity Model Maturity Certification model framework](https://www.acq.osd.mil/cmmc/). Includes various Python utilities for converting the PDF distributed by
 OUSD(A&S) into a database and for exporting the database as various other formats.
 
 
@@ -12,13 +12,16 @@ Requirements
 * camelot-py, for original conversion of PDF into normalized database structure.
 
 
-Setup
-=====
-    # For normal usage
-    pip install -r requirements.txt
+Setup Environment
+=================
+    # Get the code
+    git clone https://github.com/linville/cmmcdb.git
+    cd cmmcdb
     
-    # For pdf conversion only
-    pip install -r requirements_pdf.txt
+    # Setup venv and get dependencies
+    python -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
 
 
 Basic Usage
