@@ -12,10 +12,25 @@ Requirements
 * camelot-py, for original conversion of PDF into normalized database structure.
 
 
-Compiling Gray16Lib
-===================
+Setup
+=====
     # For normal usage
     pip install -r requirements.txt
     
     # For pdf conversion only
     pip install -r requirements_pdf.txt
+
+
+Basic Usage
+===========
+    # Create the sqlite database
+    ./manage.py migrate
+    
+    # Setup basic structures (populate domains and maturity levels)
+    ./manage.py bootstrap
+    
+    # Convert the PDF and import it into the database
+    ./manage.py importpdf /path/to/cmmc.pdf
+    
+    # Export to an Microsoft Excel compatible OpenXML document
+    ./manage.py exportxlsx

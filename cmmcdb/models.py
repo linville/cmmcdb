@@ -32,7 +32,7 @@ class Capability(models.Model):
     name = models.CharField(max_length=256, unique=True)
     process = models.BooleanField()
     
-    domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
+    domain = models.ForeignKey(Domain, on_delete=models.CASCADE, related_name='capabilities')
 
 
 class Activity(models.Model):
@@ -42,7 +42,7 @@ class Activity(models.Model):
     name = models.CharField(max_length=1024)
 
     maturity_level = models.ForeignKey(MaturityLevel, on_delete=models.CASCADE)
-    capability = models.ForeignKey(Capability, on_delete=models.CASCADE)
+    capability = models.ForeignKey(Capability, on_delete=models.CASCADE, related_name='activities')
 
 
 class ActivityReference(models.Model):
