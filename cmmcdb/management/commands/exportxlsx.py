@@ -9,30 +9,44 @@ import argparse
 import json
 import datetime
 
+from openpyxl import Workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import NamedStyle, Alignment, Font, Color, PatternFill
+
 
 class Command(BaseCommand):
-    """ Exports an Open XML"""
+    """ Exports the CMMC database structure as Open XML spreadsheet."""
 
-    help = "Exports an Open XML format"
+    help = "Exports the CMMC database structure as Open XML spreadsheet."
 
     def handle(self, *args, **options):
-        from openpyxl import Workbook
-        from openpyxl.utils import get_column_letter
-        from openpyxl.styles import Alignment, Font, Color, PatternFill
-
-        # from openpyxl.descriptors import Alias
-
         self.wb = Workbook()
+        self.define_styles()
         self.wb_row = 1
         # wb.active
-
+        
+        self.wb.freeze_panes = "A1"
+        c = self.wb.active.cell(
+            column=1,
+            row=self.wb_row,
+            value=f"Capability",
+        )
+        c.style = "Maturity Level"
+        
         self.ml = {}
         for ml in MaturityLevel.objects.order_by("level").all():
             self.ml[ml.level] = ml
+            c = self.wb.active.cell(
+                column=ml.level + 1,
+                row=self.wb_row,
+                value=f"Level {ml.level}",
+            )
+            c.style = "Maturity Level"
+        self.wb_row += 1
 
         # Column Formatting
         self.wb.active.column_dimensions[get_column_letter(1)].width = 45
-        for i in range(2, 6):
+        for i in range(2, 7):
             self.wb.active.column_dimensions[get_column_letter(i)].width = 40
 
         # Output Domain
@@ -44,8 +58,7 @@ class Command(BaseCommand):
             c = self.wb.active.cell(
                 column=1, row=self.wb_row, value=f"Domain: {domain.name}"
             )
-            c.font = Font(size=14, bold=True, color="ffffff")
-            c.fill = PatternFill("solid", fgColor="0000ff")
+            c.style = "Domain"
 
             self.wb_row += 1
             for capability in domain.capabilities.order_by("process", "index").all():
@@ -54,18 +67,15 @@ class Command(BaseCommand):
                     row=self.wb_row,
                     value=f"C{capability.index} {capability.name}",
                 )
-                c.alignment = Alignment(
-                    horizontal="general", vertical="top", wrap_text=True
-                )
+                c.style = "Practice"
+
+                c
 
                 if capability.process:
-                    c.fill = PatternFill("solid", fgColor="ddddff")
-
-                self.wb_row += 1
+                    c.value = f"Process: {capability.name}"
+                    c.style = "Process"
 
                 self.export_capability(capability)
-
-            print("\n\n\n")
             self.wb_row += 1
 
         self.wb.save(filename=("cmmc.xlsx"))
@@ -82,10 +92,8 @@ class Command(BaseCommand):
 
         capability.activities.filter(index=row)
 
-        # c = ws.cell(1, wb_row, value=capability, name)
         for i in range(1, 6):
             try:
-                # print(f"    L{i}-{activity.index}: {activity.name}")
                 activity = capability.activities.filter(
                     index=row, maturity_level=self.ml[i]
                 ).get()
@@ -95,10 +103,45 @@ class Command(BaseCommand):
                     row=self.wb_row,
                     value=f"L{i}-{activity.index} {activity.name}",
                 )
-                c.alignment = Alignment(
-                    horizontal="general", vertical="top", wrap_text=True
-                )
+                c.style = "Activity"
 
             except:
-                # print(f"    L{i}")
                 pass
+
+    def define_styles(self):
+        # Domain Cell Styles
+        s = NamedStyle(name="Domain")
+        s.font = Font(size=16, bold=True)
+        s.fill = PatternFill("solid", fgColor="fff1ce")
+        self.wb.add_named_style(s)
+        
+        # Maturity Level Styles
+        s = NamedStyle(name="Maturity Level")
+        s.font = Font(size=12, bold=True, color="ffffff")
+        s.fill = PatternFill("solid", fgColor="0000ff")
+        s.alignment = Alignment(horizontal="center")
+        self.wb.add_named_style(s)
+        
+        # Practice
+        s = NamedStyle(name="Practice")
+        s.font = Font(size=12, bold=True)
+        s.alignment = Alignment(
+            horizontal="general", vertical="top", wrap_text=True
+        )
+        self.wb.add_named_style(s)
+        
+        # Process
+        s = NamedStyle(name="Process")
+        s.font = Font(size=12, bold=True)
+        s.fill = PatternFill("solid", fgColor="ddddff")
+        s.alignment = Alignment(
+            horizontal="general", vertical="top", wrap_text=True
+        )
+        self.wb.add_named_style(s)
+        
+        # Activity
+        s = NamedStyle(name="Activity")
+        s.alignment = Alignment(
+            horizontal="general", vertical="top", wrap_text=True
+        )
+        self.wb.add_named_style(s)
