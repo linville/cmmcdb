@@ -1,8 +1,7 @@
 cmmcdb
 ======
 
-CMMCDB is a suite of utilities for importing the [Cybersecurity Model Maturity Certification model framework](https://www.acq.osd.mil/cmmc/) into a normalized database structured (i.e.: Django active record model). It includes capabilities for importing the original PDF distributed by
-OUSD(A&S) and then exporting various other formats including OpenXML and JSON.
+CMMCDB is a suite of utilities for importing the [Cybersecurity Model Maturity Certification (CMMC) model framework](https://www.acq.osd.mil/cmmc/) into a normalized database structure (i.e.: Django active record model). It includes capabilities for importing the original PDF distributed by OUSD(A&S) and then exporting various other formats including OpenXML and JSON.
 
 
 Requirements

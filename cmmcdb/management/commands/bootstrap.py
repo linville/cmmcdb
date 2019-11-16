@@ -1,5 +1,5 @@
 # The bootstrap command is a manual insertion of a small portion of
-# the 0.4 draft release of the CMMC Model Framework. The bootstrap
+# the 0.6b draft release of the CMMC Model Framework. The bootstrap
 # is used for preliminary developing and testing changes in the
 # structure of the database model.
 
@@ -57,7 +57,6 @@ class Command(BaseCommand):
         self.domainAA = Domain.objects.create(short="AA", name="Audit and Accountability")
         self.domainAT = Domain.objects.create(short="AT", name="Awareness and Training")
         self.domainCM = Domain.objects.create(short="CM", name="Configuration Management")
-        self.domainCG = Domain.objects.create(short="CG", name="Cybersecurity Governance")
         self.domainIDA = Domain.objects.create(short="IDA", name="Identification and Authentication")
         self.domainIR = Domain.objects.create(short="IR", name="Incident Response")
         self.domainMA = Domain.objects.create(short="MA", name="Maintenance")

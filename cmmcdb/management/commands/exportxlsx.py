@@ -84,32 +84,43 @@ class Command(BaseCommand):
         self.wb.save(filename=options["FILE"].name)
 
     def export_capability(self, capability):
-        max_index = capability.activities.aggregate(Max("index"))["index__max"]
-
-        for i in range(1, max_index + 1):
-            self.export_capability_row(capability, i)
-            self.wb_row += 1
-
-    def export_capability_row(self, capability, row):
-        ws = self.wb.active
-
-        capability.activities.filter(index=row)
+        max_count = 0
+        capability_practices = []
 
         for i in range(1, 6):
-            try:
-                activity = capability.activities.filter(
-                    index=row, maturity_level=self.ml[i]
-                ).get()
+            column = []
 
-                c = self.wb.active.cell(
-                    column=i + 1,
-                    row=self.wb_row,
-                    value=f"L{i}-{activity.index} {activity.name}",
-                )
-                c.style = "Activity"
+            practices = capability.practices.filter(
+                maturity_level=self.ml[i]
+            ).order_by("text_id").all()
 
-            except:
-                pass
+            for practice in practices:
+                column.append(practice)
+
+            capability_practices.append(column)
+            max_count = max(max_count, len(column))
+
+        for i in range(0, max_count):
+            self.export_capability_row(capability_practices, i)
+            self.wb_row += 1
+
+    def export_capability_row(self, capability_practices, row):
+        ws = self.wb.active
+
+        for i in range(0, 5):
+            ml_data = capability_practices[i]
+            
+            if not row < len(ml_data):
+                continue
+
+            practice = ml_data[row]
+
+            c = self.wb.active.cell(
+                column=i + 1,
+                row=self.wb_row,
+                value=f"{practice.text_id} {practice.name}",
+            )
+            c.style = "Practice"
 
     def define_styles(self):
         # Domain Cell Styles
@@ -135,10 +146,5 @@ class Command(BaseCommand):
         s = NamedStyle(name="Process")
         s.font = Font(size=12, bold=True)
         s.fill = PatternFill("solid", fgColor="ddddff")
-        s.alignment = Alignment(horizontal="general", vertical="top", wrap_text=True)
-        self.wb.add_named_style(s)
-
-        # Activity
-        s = NamedStyle(name="Activity")
         s.alignment = Alignment(horizontal="general", vertical="top", wrap_text=True)
         self.wb.add_named_style(s)

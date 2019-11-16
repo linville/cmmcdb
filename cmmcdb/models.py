@@ -35,20 +35,20 @@ class Capability(models.Model):
     domain = models.ForeignKey(Domain, on_delete=models.CASCADE, related_name='capabilities')
 
 
-class Activity(models.Model):
-    """ Practices or Processes"""
+class Practice(models.Model):
+    """ Practices (also Processes if parent capability is a Process Maturity)"""
 
-    index = models.IntegerField()
+    text_id = models.CharField(max_length=8)
     name = models.CharField(max_length=1024)
 
     maturity_level = models.ForeignKey(MaturityLevel, on_delete=models.CASCADE)
-    capability = models.ForeignKey(Capability, on_delete=models.CASCADE, related_name='activities')
+    capability = models.ForeignKey(Capability, on_delete=models.CASCADE, related_name='practices')
 
 
-class ActivityReference(models.Model):
-    """ Cross-reference entries from activities to reference documents"""
+class PracticeReference(models.Model):
+    """ Cross-reference entries from practices to reference documents"""
 
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    practice = models.ForeignKey(Practice, on_delete=models.CASCADE)
     reference = models.ForeignKey(Reference, on_delete=models.CASCADE)
 
     section = models.CharField(max_length=64)
