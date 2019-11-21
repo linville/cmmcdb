@@ -106,16 +106,16 @@ class Command(BaseCommand):
         return last_capability
 
     def extract_domain(self, domain_text):
-        regex = "^DOMAIN:\s*(.+)\s*\((.+)\)"
-        matches = re.findall(regex, domain_text, re.IGNORECASE)
+        regex = "^DOMAIN:\s*(?P<name>.+)\s*\((?P<short>.+)\)"
+        matches = re.search(regex, domain_text, re.IGNORECASE).groupdict()
         if not matches:
             raise CommandError(f"Domain regex failed on: {domain_text}")
 
         try:
-            domain = Domain.objects.filter(short=matches[0][1]).get()
+            domain = Domain.objects.filter(short=matches['short']).get()
             return domain
         except:
-            raise CommandError(f"Failed to find domain: {matches[0][1]}")
+            raise CommandError(f"Error extracting domain: {domain_text}")
 
     def extract_is_process(self, row):
         if row[1].lower().startswith("practices"):
@@ -132,14 +132,12 @@ class Command(BaseCommand):
             index = 1
             name = simple_text
         else:
-            regex = "^C(\d+)\s(.*?)(?:\(continued\W?\))?$"
-            matches = re.findall(regex, simple_text, re.IGNORECASE)
-            # Group 0: Index
-            # Group 1: Activity
+            regex = "^C(?P<index>\d+)\s(?P<name>.*?)(?:\(continued\W?\))?$"
+            matches = re.search(regex, simple_text, re.IGNORECASE).groupdict()
 
             try:
-                index = int(matches[0][0])
-                name = " ".join(matches[0][1].split())
+                index = int(matches['index'])
+                name = " ".join(matches['name'].split())
             except:
                 raise CommandError(f"Error extracting capability: {simple_text}")
 
@@ -169,14 +167,14 @@ class Command(BaseCommand):
 
         sections = simple_text.split("•")
 
-        regex = "^((P|MP)\d+)\s(.*?)$"
-        matches = re.findall(regex, sections[0], re.IGNORECASE)
-        # Group 0: Full Id - P001, MP001
-        # Group 1: M or MP
-        # Group 2: Activity Name
+        regex = "^(?P<text_id>(?P<type>P|MP)\d+)\s(?P<name>.*?)$"
+        matches = re.search(regex, sections[0], re.IGNORECASE)
+        # text_id: Full Id - P001, MP001
+        # type: M or MP
+        # name: Practice name
 
         try:
-            name = matches[0][2].strip()
+            name = matches['name'].strip()
         except:
             raise CommandError(f"Practice didn't extract:\n  {cell}\n  {sections}\n  {matches}")
 
@@ -185,7 +183,7 @@ class Command(BaseCommand):
 
         # print(f"i,n,m,c: {matches[0][0]}, {name}, {ml}, {capability}")
         practice, created = Practice.objects.get_or_create(
-            text_id=matches[0][0],
+            text_id=matches['text_id'],
             name=name,
             maturity_level=ml,
             capability=capability,
