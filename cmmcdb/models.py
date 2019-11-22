@@ -9,6 +9,9 @@ class Reference(models.Model):
 
     name = models.CharField(max_length=256, unique=True)
 
+    def __str__(self):
+        return self.name
+
 
 class MaturityLevel(models.Model):
     """ Maturity of activities (either practices or processes)"""
@@ -17,12 +20,18 @@ class MaturityLevel(models.Model):
     practice_name = models.CharField(max_length=64, unique=True)
     process_name = models.CharField(max_length=64, unique=True)
 
+    def __str__(self):
+        return f"Level {self.level}"
+
 
 class Domain(models.Model):
     """ Domains"""
 
     name = models.CharField(max_length=256, unique=True)
     short = models.CharField(max_length=3, unique=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.short})"
 
 
 class Capability(models.Model):
@@ -31,8 +40,13 @@ class Capability(models.Model):
     index = models.IntegerField()
     name = models.CharField(max_length=256, unique=True)
     process = models.BooleanField()
-    
-    domain = models.ForeignKey(Domain, on_delete=models.CASCADE, related_name='capabilities')
+
+    domain = models.ForeignKey(
+        Domain, on_delete=models.CASCADE, related_name="capabilities"
+    )
+
+    def __str__(self):
+        return f"C{self.index} {self.name}"
 
 
 class Practice(models.Model):
@@ -42,7 +56,12 @@ class Practice(models.Model):
     name = models.CharField(max_length=1024)
 
     maturity_level = models.ForeignKey(MaturityLevel, on_delete=models.CASCADE)
-    capability = models.ForeignKey(Capability, on_delete=models.CASCADE, related_name='practices')
+    capability = models.ForeignKey(
+        Capability, on_delete=models.CASCADE, related_name="practices"
+    )
+
+    def __str__(self):
+        return f"{self.text_id} {self.name}"
 
 
 class PracticeReference(models.Model):
@@ -52,3 +71,6 @@ class PracticeReference(models.Model):
     reference = models.ForeignKey(Reference, on_delete=models.CASCADE)
 
     section = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.practice.name} - {self.reference.name}"
