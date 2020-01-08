@@ -44,27 +44,22 @@ class Command(BaseCommand):
 
         last_capability = None
 
-        for page_index in range(18, 37):
+        for page_index in range(19, 38):
             print(f"Reading CMMC pdf page {page_index}...")
-            # Extract the Table Header
-            header = camelot.read_pdf(
-                options["FILE"].name,
-                pages=str(page_index),
-                flavor="stream",
-                table_areas=["50,561,400,538"],
-                suppress_stdout=True,
-            )
-            domain = self.extract_domain(header[0].data[0][0])
 
             # Extract the Table
-            tables = camelot.read_pdf(options["FILE"].name, pages=str(page_index))
+            try:
+                tables = camelot.read_pdf(options["FILE"].name, pages=str(page_index))
+            except NotImplementedError:
+                print("PyPDF2 does not support read-only PDFs. Use pikepdf to fix.")
+                exit(0)
 
             if tables.n != 1:
                 raise CommandError(f"Expected 1 table per page. Found {tables.n}.")
 
-            last_capability = self.extract_table(domain,last_capability, tables[0])
+            last_capability = self.extract_table(last_capability, tables[0])
 
-    def extract_table(self, domain, last_capability, table):
+    def extract_table(self, last_capability, table):
         if table.shape[1] != 6:
             raise CommandError(f"Expected table to have 6 columns. Found {table.shape[1]} columns on page {table.page}.")
 
@@ -73,17 +68,20 @@ class Command(BaseCommand):
 
         #print(table.data)
 
-        # Row 0: Capability, Practices
+        # Row 0: Domain
+        domain = self.extract_domain(table.data[0][0])
 
-        # Row 1: Empty Cell, Level 1 ... Level 5
+        # Row 1: Capability, Practices
 
-        # Row 2+: Practices
+        # Row 2: Empty Cell, Level 1 ... Level 5
+
+        # Row 3+: Practices
         # Column 0, Capability or Empty Cell
         # Column 1-5: Practice
 
-        is_process = self.extract_is_process(table.data[0])
+        is_process = self.extract_is_process(table.data[1])
 
-        for i in range(2, table.shape[0]):
+        for i in range(3, table.shape[0]):
             print(f" Row {i}")
 
             # Check for a new capability in first column
@@ -107,8 +105,9 @@ class Command(BaseCommand):
 
     def extract_domain(self, domain_text):
         regex = "^DOMAIN:\s*(?P<name>.+)\s*\((?P<short>.+)\)"
-        matches = re.search(regex, domain_text, re.IGNORECASE).groupdict()
-        if not matches:
+        try:
+            matches = re.search(regex, domain_text, re.IGNORECASE).groupdict()
+        except:
             raise CommandError(f"Domain regex failed on: {domain_text}")
 
         try:
