@@ -28,7 +28,7 @@ class Domain(models.Model):
     """ Domains"""
 
     name = models.CharField(max_length=256, unique=True)
-    short = models.CharField(max_length=3, unique=True)
+    short = models.CharField(max_length=2, unique=True)
 
     def __str__(self):
         return f"{self.name} ({self.short})"
@@ -52,7 +52,7 @@ class Capability(models.Model):
 class Practice(models.Model):
     """ Practices (also Processes if parent capability is a Process Maturity)"""
 
-    text_id = models.CharField(max_length=8)
+    practice_number = models.IntegerField()
     name = models.CharField(max_length=1024)
 
     maturity_level = models.ForeignKey(MaturityLevel, on_delete=models.CASCADE)
