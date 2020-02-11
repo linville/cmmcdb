@@ -1,6 +1,6 @@
 black==19.3b0
 camelot-py==0.7.3
-Django==3.0.2
+Django==3.0.3
 opencv-python==4.1.2.30
 openpyxl==3.0.2
 pytz==2019.3
