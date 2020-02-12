@@ -92,7 +92,7 @@ class Command(BaseCommand):
 
             practices = capability.practices.filter(
                 maturity_level=self.ml[i]
-            ).order_by("text_id").all()
+            ).order_by("practice_number").all()
 
             for practice in practices:
                 column.append(practice)
@@ -118,7 +118,7 @@ class Command(BaseCommand):
             c = self.wb.active.cell(
                 column=i + 1,
                 row=self.wb_row,
-                value=f"{practice.text_id} {practice.name}",
+                value=f"{practice.practice_number} {practice.name}",
             )
             c.style = "Practice"
 
