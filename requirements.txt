@@ -1,5 +1,5 @@
-black==19.3b0
-camelot-py==0.7.3
-Django==3.0.*
-opencv-python==4.1.*
-openpyxl==3.0.*
+black~=20.0
+camelot-py~=0.8.0
+Django~=3.1.0
+opencv-python~=4.5.0
+openpyxl~=3.0.0
