@@ -1,0 +1,9 @@
+[flake8]
+max-line-length = 88
+max-complexity = 10
+extend-ignore = E501
+select = C,E,F,W,DJ
+exclude =
+    .git,
+    .venv,
+    cmmcdb/migrations
