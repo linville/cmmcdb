@@ -126,7 +126,7 @@ class Command(BaseCommand):
         return last_capability
 
     def extract_domain(self, domain_text):
-        regex = "^(?P<name>.+)\s*\((?P<short>.+)\)"
+        regex = r"^(?P<name>.+)\s*\((?P<short>.+)\)"
         try:
             matches = re.search(regex, domain_text, re.IGNORECASE).groupdict()
         except:
@@ -153,7 +153,7 @@ class Command(BaseCommand):
             index = 1
             name = simple_text
         else:
-            regex = "^C(?P<index>\d+)\s(?P<name>.*?)(?:\(continued\W?\))?$"
+            regex = r"^C(?P<index>\d+)\s(?P<name>.*?)(?:\(continued\W?\))?$"
             matches = re.search(regex, simple_text, re.IGNORECASE).groupdict()
 
             try:
@@ -187,7 +187,7 @@ class Command(BaseCommand):
 
         sections = simple_text.split("•")
 
-        regex = "^(?P<text_id>(?P<domain>[A-Z]{2,3})\.(?P<level>\d+)\.(?P<practicenumber>\d+))\s(?P<name>.*?)$"
+        regex = r"^(?P<text_id>(?P<domain>[A-Z]{2,3})\.(?P<level>\d+)\.(?P<practicenumber>\d+))\s(?P<name>.*?)$"
         matches = re.search(regex, sections[0], re.IGNORECASE)
         # text_id: Full Id: AC.1.001
         # domain: AC
