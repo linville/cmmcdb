@@ -22,10 +22,11 @@ class Command(BaseCommand):
         self.dib = Reference.objects.create(name="DIB")
         self.nist = Reference.objects.create(name="NIST SP 800-171")
 
+        # Create Maturity Levels
         self.m1 = MaturityLevel.objects.create(
             level=1,
             practice_name="Basic Cyber Hygiene",
-            process_name="Performed"
+            process_name="Performed",
         )
 
         self.m2 = MaturityLevel.objects.create(
@@ -37,21 +38,22 @@ class Command(BaseCommand):
         self.m3 = MaturityLevel.objects.create(
             level=3,
             practice_name="Good Cyber Hygiene",
-            process_name="Managed"
+            process_name="Managed",
         )
 
         self.m4 = MaturityLevel.objects.create(
             level=4,
             practice_name="Proactive",
-            process_name="Reviewed"
+            process_name="Reviewed",
         )
 
         self.m5 = MaturityLevel.objects.create(
             level=5,
             practice_name="Advanced / Progressive",
-            process_name="Optimized"
+            process_name="Optimized",
         )
 
+        # fmt: off
         self.domainAC = Domain.objects.create(short="AC", name="Access Control")
         self.domainAM = Domain.objects.create(short="AM", name="Asset Management")
         self.domainAU = Domain.objects.create(short="AU", name="Audit and Accountability")

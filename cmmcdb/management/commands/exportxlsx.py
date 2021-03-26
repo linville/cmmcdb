@@ -90,9 +90,11 @@ class Command(BaseCommand):
         for i in range(1, 6):
             column = []
 
-            practices = capability.practices.filter(
-                maturity_level=self.ml[i]
-            ).order_by("practice_number").all()
+            practices = (
+                capability.practices.filter(maturity_level=self.ml[i])
+                .order_by("practice_number")
+                .all()
+            )
 
             for practice in practices:
                 column.append(practice)
@@ -109,7 +111,7 @@ class Command(BaseCommand):
 
         for i in range(0, 5):
             ml_data = capability_practices[i]
-            
+
             if not row < len(ml_data):
                 continue
 
